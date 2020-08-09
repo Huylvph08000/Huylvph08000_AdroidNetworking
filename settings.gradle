@@ -1,0 +1,2 @@
+include ':app'
+rootProject.name = "Huylvph08000_AdroidNetworking"
