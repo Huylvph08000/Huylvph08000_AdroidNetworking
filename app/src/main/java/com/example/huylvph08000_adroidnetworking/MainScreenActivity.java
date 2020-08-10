@@ -26,8 +26,7 @@ public class MainScreenActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        Intent intent;
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {        Intent intent;
         switch (item.getItemId()){
             case R.id.menu_favorite_images:
                 intent = new Intent(this, FavoriteImageActivity.class);

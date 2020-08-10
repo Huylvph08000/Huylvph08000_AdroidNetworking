@@ -50,7 +50,6 @@ public class NewFeedActivity extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                //swipeRefreshLayout.setRefreshing(true);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -66,36 +65,29 @@ public class NewFeedActivity extends AppCompatActivity {
 
     private void GetData() {
         swipeRefreshLayout.setRefreshing(true);
-        //RequestQueue: nơi giữ các request trước khi gửi
-        //tạo một RequestQueue bằng lệnh
         RequestQueue requestQueue =
                 Volley.newRequestQueue(NewFeedActivity.this);
-        //StringRequest: kế thừa từ Request, là class đại diện cho request trả về String
-        // khai báo stringRepuest, phương thức POST
         StringRequest stringRequest = new StringRequest(Request.Method.POST,
-                "https://www.flickr.com/services/rest", new Response.Listener<String>() { //Nơi bạn nhận dữ liệu trả về từ server khi request hoàn thành
+                "https://www.flickr.com/services/rest", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                //là một thư viện java giúp chuyển đổi qua lại giữa JSON và Java
+
                 Gson gson = new Gson();
 
                 Flickr flickrPhoto =
                         gson.fromJson(response, Flickr.class);
 
                 List<Image> photos = flickrPhoto.getPhotos().getPhoto();
-
-                // gọi interface bên adapter để bắt sự kiện chuyển màn hình và truyền position của item đã click sang màn hình main2
                 imageViewAdapter = new ImageViewAdapter(getApplication(), (ArrayList<Image>) photos,
                         new ImageViewAdapter.AdapterListener() {
                             @Override
                             public void OnClick(int position) {
-                                Intent intent = new Intent(NewFeedActivity.this, DetailIRecentImageActivity.class);
+                                Intent intent = new Intent(NewFeedActivity.this, DetailImageActivity.class);
                                 intent.putExtra("position", position);
                                 intent.putExtra("service", servive);
                                 startActivity(intent);
                             }
                         });
-                // 1 dạng layout trong recyclerView giúp view hiển thị theo dạng lưới tùy theo kích thước của item
                 StaggeredGridLayoutManager staggeredGridLayoutManager = new
                         StaggeredGridLayoutManager(NUM_COLUMNS, LinearLayoutManager.VERTICAL);
                 recyclerViewImage.setLayoutManager(staggeredGridLayoutManager);
@@ -105,14 +97,12 @@ public class NewFeedActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                // nơi nhận các lỗi xảy ra khi request
                 swipeRefreshLayout.setRefreshing(false);
                 Toast.makeText(NewFeedActivity.this, error.toString(), Toast.LENGTH_LONG).show();
             }
         }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                // lưu giữ các giá trị theo cặp key/value
                 Map<String, String> params = new HashMap<>();
                 params.put("api_key", "bd17e566558baf694db6424c5ad2b74a");
                 params.put("user_id", "187053598@N06");
@@ -124,7 +114,7 @@ public class NewFeedActivity extends AppCompatActivity {
                 return params;
             }
         };
-        requestQueue.add(stringRequest); // thêm vào nơi giữ các request để gửi lên server
+        requestQueue.add(stringRequest);
     }
 
     @Override

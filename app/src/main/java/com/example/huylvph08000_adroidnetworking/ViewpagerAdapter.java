@@ -26,13 +26,11 @@ public class ViewpagerAdapter extends PagerAdapter {
         this.inflater = LayoutInflater.from(context);
     }
 
-    // đi sang 1 page khác sẽ destroy item ở page cũ
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         container.removeView((View) object);
     }
 
-    //trả về số lượng item sẽ đc show
     @Override
     public int getCount() {
         return listPhotos.size();
@@ -47,7 +45,6 @@ public class ViewpagerAdapter extends PagerAdapter {
         return view1;
     }
 
-    //phương thức kiểm tra xem các đối tượng đc trả về bởi instantiateItem() đc liên kết với View được cung cấp
     @Override
     public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
         return view.equals(object);

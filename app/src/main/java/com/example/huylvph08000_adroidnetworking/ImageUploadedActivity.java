@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.Toast;
@@ -33,6 +34,7 @@ public class ImageUploadedActivity extends AppCompatActivity {
     RecyclerView recyclerViewImage;
     SwipeRefreshLayout swipeRefreshLayout;
     private static final int NUM_COLUMNS = 2;
+    private String sevice = "flickr.people.getPhotos";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +46,6 @@ public class ImageUploadedActivity extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                //swipeRefreshLayout.setRefreshing(true);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -59,17 +60,13 @@ public class ImageUploadedActivity extends AppCompatActivity {
 
     private void GetData() {
         swipeRefreshLayout.setRefreshing(true);
-        //RequestQueue: nơi giữ các request trước khi gửi
-        //tạo một RequestQueue bằng lệnh
         RequestQueue requestQueue =
                 Volley.newRequestQueue(ImageUploadedActivity.this);
-        //StringRequest: kế thừa từ Request, là class đại diện cho request trả về String
-        // khai báo stringRepuest, phương thức POST
         StringRequest stringRequest = new StringRequest(Request.Method.POST,
-                "https://www.flickr.com/services/rest", new Response.Listener<String>() { //Nơi bạn nhận dữ liệu trả về từ server khi request hoàn thành
+                "https://www.flickr.com/services/rest", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                //là một thư viện java giúp chuyển đổi qua lại giữa JSON và Java
+
                 Gson gson = new Gson();
 
                 Flickr flickrPhoto =
@@ -81,9 +78,10 @@ public class ImageUploadedActivity extends AppCompatActivity {
                         new ImageViewAdapter.AdapterListener() {
                             @Override
                             public void OnClick(int position) {
-//                                Intent intent = new Intent(ImageUploadedActivity.this, DetailImageActivity.class);
-//                                intent.putExtra("position",position);
-//                                startActivity(intent);
+                                Intent intent = new Intent(ImageUploadedActivity.this, DetailImageActivity.class);
+                                intent.putExtra("position",position);
+                                intent.putExtra("service", sevice);
+                                startActivity(intent);
                             }
                         });
                 StaggeredGridLayoutManager staggeredGridLayoutManager = new
@@ -95,14 +93,12 @@ public class ImageUploadedActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                // nơi nhận các lỗi xảy ra khi request
                 swipeRefreshLayout.setRefreshing(false);
                 Toast.makeText(ImageUploadedActivity.this, error.toString(),Toast.LENGTH_LONG).show();
             }
         }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                // lưu giữ các giá trị theo cặp key/value
                 Map<String, String> params = new HashMap<>();
                 params.put("api_key", "bd17e566558baf694db6424c5ad2b74a");
                 params.put("user_id", "187053598@N06");
@@ -115,6 +111,6 @@ public class ImageUploadedActivity extends AppCompatActivity {
                 return params;
             }
         };
-        requestQueue.add(stringRequest); // thêm vào nơi giữ các request để gửi lên server
+        requestQueue.add(stringRequest);
     }
 }
